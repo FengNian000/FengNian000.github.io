@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>凤年の小窝——快速排序 | (*^▽^*)</title>
+  <title>凤年の小窝——小站首页 | (*^▽^*)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
 
@@ -19,7 +19,7 @@
     <script src="/js/contrib/auto-render.min.js"></script>
   <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
   <script>
-    document.title = `凤年の小窝——快速排序`
+    document.title = `凤年の小窝——小站首页`
   </script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
@@ -355,159 +355,36 @@
 </div></div>
       <div id="main-container" class="main-container">
 
+    
 
-  <style>
-pre::-webkit-scrollbar {
-  width: 5px;
-  height: 10px;
-  background-color:#F5F5F5;
-}
-/*定义滚动条轨道
-内阴影+圆角*/
-pre::-webkit-scrollbar-track {
-  background-color:#F5F5F5;
-}
-/*定义滑块
-内阴影+圆角*/
-pre::-webkit-scrollbar-thumb {
-  background-color: rgb(69, 83, 100);
-}
-
-pre:active {
-  background-color: rgb(81, 95, 116);
-}
-</style>
-
-<div class="article-container">
-  <div class="article">
-    <h1 class="article-title">快速排序</h1>
-    <div class="article-info">
-      <div class="article-info--item">
-        <div class="article-info--info">
-          
-          <div class="article-info--categories">
-            <span>分类：</span>
+<div class="index">
+  <div class="index-left">
+    
+      <div class="index-article">
+        <img class="index-article--cover" src="/imgs/default-cover.webp" alt="">
+        <div class="index-article--content">
+          <a href="/2023/02/02/%E6%B5%85%E8%B0%88KMP/"> </a>
+          <div>
+            
             
           </div>
-          
-          
-          <div class="article-info--tags">
-            <span>标签：</span>
-            <a class="tag-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>
-          </div>
-          
-          <p class="article-info--date">日期：2021-07-16 08:54:43</p>
+          <div class="bg"></div>
         </div>
-        <img src="https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/posts_cover/04.jpg" alt="" class="article-cover">
       </div>
-    </div>
-    <article class="article-content">
-      <h1><span id="原理">原理</span></h1>
-<p>原理与冒泡排序类似，但冒泡排序是相邻两个互相比较，效率很慢，快速排序则利用二分思想，在数组中间立一个哨兵，两个指针各自从左往右查找大于或小于哨兵的数，再进行交换，将比哨兵小的数挪到哨兵左边，将大的数挪到哨兵右边。</p>
-<h1><span id="图解">图解</span></h1>
-<h2><span id="1">1.</span></h2>
-<p><img src="https://cdn.luogu.com.cn/upload/image_hosting/dyz3eybv.png">
-如图，一个head指针，一个tail指针，一个中间的哨兵flag。</p>
-<p>tail哨兵从右往左进行查找第一个小于哨兵的数，找到第六个数比哨兵小。</p>
-<p>然后head指针从左往右查找第一个大于哨兵的数，找到第六个 如图： <img src="https://cdn.luogu.com.cn/upload/image_hosting/dyz3eybv.png">
-判断两个指针是否越界，即head是否在tail右侧（之后会写为什么），如果不，则交换两个指针所指向的值。
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">if</span><span class="token punctuation">(</span>head<span class="token operator">&lt;=</span>tail<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-   <span class="token function">swap</span><span class="token punctuation">(</span>a<span class="token punctuation">[</span>head<span class="token punctuation">]</span><span class="token punctuation">,</span>a<span class="token punctuation">[</span>tail<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-   head<span class="token operator">++</span><span class="token punctuation">;</span>
-   tail<span class="token operator">--</span><span class="token punctuation">;</span><span class="token comment">//这里的自加和自减意在防止下次查找时查重</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre> ## 2. <img src="https://cdn.luogu.com.cn/upload/image_hosting/347oxqzj.png">
-如图，交换两数之后继续查找tail找到第一个数，head找到第二个，但此时tail在head左侧，因为head左侧的数一定已经被交换过，所以不再循环if，此时tail已经到头，不能交换了，所以递推交换tail右边的部分。</p>
-<p># Code <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;iostream></span></span>
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;cstdio></span></span>
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">N</span> <span class="token expression"><span class="token number">1000010</span></span></span>
-<span class="token keyword">using</span> <span class="token keyword">namespace</span> std<span class="token punctuation">;</span>
-
-<span class="token keyword">int</span> a<span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token number">5</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">5</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>n<span class="token punctuation">;</span>
-
-<span class="token keyword">int</span>	<span class="token function">Sort</span><span class="token punctuation">(</span><span class="token keyword">int</span> l<span class="token punctuation">,</span><span class="token keyword">int</span> r<span class="token punctuation">,</span><span class="token keyword">int</span> array<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token comment">//头 尾 数组名 </span>
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> flag<span class="token operator">=</span>array<span class="token punctuation">[</span> <span class="token punctuation">(</span>l<span class="token operator">+</span>r<span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">2</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment">//立一个靠中间的数为哨兵 </span>
-    <span class="token keyword">int</span> head<span class="token operator">=</span>l<span class="token punctuation">,</span>tail<span class="token operator">=</span>r<span class="token punctuation">;</span><span class="token comment">//设两个指针，一个左边，一个右边 </span>
-    <span class="token keyword">while</span><span class="token punctuation">(</span>head<span class="token operator">&lt;=</span>tail<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">while</span><span class="token punctuation">(</span>array<span class="token punctuation">[</span>head<span class="token punctuation">]</span><span class="token operator">&lt;</span>flag<span class="token punctuation">)</span>		head<span class="token operator">++</span><span class="token punctuation">;</span><span class="token comment">//h指针从左往右找到第一个大于等于哨兵的人 </span>
-        <span class="token keyword">while</span><span class="token punctuation">(</span>array<span class="token punctuation">[</span>tail<span class="token punctuation">]</span><span class="token operator">></span>flag<span class="token punctuation">)</span>		tail<span class="token operator">--</span><span class="token punctuation">;</span><span class="token comment">//t指针从右往左找到第一个小于等于哨兵的人 </span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>head<span class="token operator">&lt;=</span>tail<span class="token punctuation">)</span><span class="token comment">//如果h指针仍然在t指针左侧 </span>
-        <span class="token punctuation">&#123;</span>
-            <span class="token function">swap</span><span class="token punctuation">(</span>array<span class="token punctuation">[</span>head<span class="token punctuation">]</span><span class="token punctuation">,</span>array<span class="token punctuation">[</span>tail<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//则交换 </span>
-            head<span class="token operator">++</span><span class="token punctuation">;</span><span class="token comment">//两指针各动一下，防止查重 </span>
-            tail<span class="token operator">--</span><span class="token punctuation">;</span> 
-        <span class="token punctuation">&#125;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>l<span class="token operator">&lt;</span>tail<span class="token punctuation">)</span>	<span class="token function">Sort</span><span class="token punctuation">(</span>l<span class="token punctuation">,</span>tail<span class="token punctuation">,</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//如果t指针还没到头，说明还可以交换 </span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>head<span class="token operator">&lt;</span>r<span class="token punctuation">)</span>	<span class="token function">Sort</span><span class="token punctuation">(</span>head<span class="token punctuation">,</span>r<span class="token punctuation">,</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//同上，h指针还没到头 </span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"排序前："</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
-    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;=</span><span class="token number">4</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span>
-        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d "</span><span class="token punctuation">,</span>a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">Sort</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"排序后："</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;=</span><span class="token number">4</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span>
-        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d "</span><span class="token punctuation">,</span>a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre> # 后 蒟蒻第一篇博客......<del>（逃）</del></p>
-<script>renderMathInElement(document.body);</script>
-
-    </article>
     
   </div>
-  <div class="article-catelogue">
-    <div class="article-catelogue--wrapper">
-      <div class="catelogue catelogue-1">
-        <h3>目录</h3>
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">图解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">2.1.</span> <span class="toc-text">1.</span></a></li></ol></li></ol>
-      </div>
+  <div class="index-center">
+    
+  </div>
+  <div class="index-right">
+    <div class="index-right-wrapper">
       
-        <div class="catelogue catelogue-2">
-          
-            <p>
-              <span>上一篇：</span>
-              <a href="/2021/10/02/01の背包问题/">01の背包问题</a>
-            </p>
-           
-          
-        </div>
-      
+      <ul class="tags" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/String/" rel="tag">String</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Data-Structure/" rel="tag">Data Structure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag">DP学习笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">2023年02月</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">2022年10月</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">2021年10月</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">2021年07月</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 </div>
-
-<script src="/js/prism.js"></script>
-
-
-<script>
-  $(document).on('pjax:complete', function() {
-    const tocs = document.querySelector('.toc')
-    const links = tocs ? tocs.querySelectorAll('a') : []
-    links.forEach(link => {
-      link.addEventListener('click', e => {
-        const href = decodeURIComponent(a.href)
-        href.search(/#(.*)/)
-        const id = RegExp.$1
-        const target = document.querySelector('#' + id)
-        const top = target.offsetTop
-        document.documentElement.scrollTo({
-          top: top - 100,
-          behavior: 'smooth'
-        })
-        e.preventDefault()
-      })
-    })
-  })
-</script>
  
-
 </div>
       <div class="main-right-wrapper"><div class="main-right">
   <div class="main-right--board">
