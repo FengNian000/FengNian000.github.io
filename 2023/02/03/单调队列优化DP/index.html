@@ -344,7 +344,7 @@
       </p>
       <p class="main-left--subtitle">
         <span>上线时间：</span>
-        <span>14天</span>
+        <span>15天</span>
       </p>
       <p class="main-left--subtitle">
         <span>当前版本：</span>
@@ -472,8 +472,10 @@ deque<span class="token operator">&lt;</span>node<span class="token operator">><
 都会遍历 <span class="math inline">\(j \in [i - m, i - 1]\)</span>，对于
 <span class="math inline">\(i + 1\)</span> ， <span class="math inline">\(j\)</span> 的取值会向后移动一位，此时意味着第
 <span class="math inline">\(i - m\)</span> 个决策会过期，同时第 <span class="math inline">\(i\)</span>
-个状态会被加入，看到这其实和单调队列板子就有异曲同工的地方了，<code>删去过期决策和不满足的决策，加入新的且满足条件的决策</code>，这不就和板子一样了吗，板子里我有说
-&gt;每压入新元素之前删去过期元素和破坏单调性的元素即可</p>
+个状态会被加入，看到这其实和单调队列板子就有异曲同工的地方了，<code>删去过期决策和不满足的决策，加入新的且满足条件的决策</code>，这不就和板子一样了吗，板子里我有说</p>
+<blockquote>
+<p>每压入新元素之前删去过期元素和破坏单调性的元素即可</p>
+</blockquote>
 <p>对于形如 <span class="math inline">\(f_i = \min/\max\{f_j + b_j +
 a_i\} \bigcup L(i) \leq j \leq R(n)(LR为窗口)\)</span> 其中与 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 有关的项 <span class="math inline">\(a_i\)</span> 和 <span class="math inline">\(b_j\)</span> 相互独立（对于形如 <span class="math inline">\(a_i \times b_j\)</span>
 这种不相互独立的情况会在斜率优化中介绍），如果单纯的循环 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 复杂度是 <span class="math inline">\(O(n^2)\)</span>，但如果使用单调队列优化复杂度可降低到
