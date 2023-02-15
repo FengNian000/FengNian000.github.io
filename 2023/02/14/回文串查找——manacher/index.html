@@ -568,13 +568,13 @@ i 为起始和结尾的最长回文串的长度，然后 <span class="math inlin
     <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> ans<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>可以看到我在跑完马拉车之后又进行了两个处理，接下来引入一个新的概念：饱和字符串
-<img src="https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/manacher_01.png">
-如图，对于当前的 i ，红框中的 <code>aaa</code>
+<p>可以看到我在跑完马拉车之后又进行了两个处理，接下来引入一个新的概念：饱和字符串</p>
+<p><img src="https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/manacher_01.png"></p>
+<p>如图，对于当前的 i ，红框中的 <code>aaa</code>
 是回文串但是却并未匹配完全，黄框中的 <code>aaaaa</code>
 饱和字符串（即不能继续扩展）。在 manacher 中计算的其实都是以 i
-为开头和结尾的饱和字符串长度。 <img src="https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/manacher_02.png">
-如图，i 和 i + 2 指向的都是 <span class="math inline">\(\#\)</span>（图中未画出）,以 i
+为开头和结尾的饱和字符串长度。 <img src="https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/manacher_02.png"></p>
+<p>如图，i 和 i + 2 指向的都是 <span class="math inline">\(\#\)</span>（图中未画出）,以 i
 结尾子最长回文串长度应该是 4 ，但是由于马拉车的对称性质，所以只匹配了
 <code>aaa</code> 但如果让 <span class="math inline">\(l[i] = max(l[i],
 l[i + 2] - 2)\)</span>就可以解决这个问题,另一句也是同理这里不过多解释
