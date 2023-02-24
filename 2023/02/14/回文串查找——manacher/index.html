@@ -201,7 +201,7 @@
   const ipt = document.querySelector('#search-input')
   const btn = document.querySelector('#search-btn')
   const layer = document.querySelector('#search-layer')
-  const posts = JSON.parse(`[{"title":"01の背包问题","path":"2021/10/02/01の背包问题/"},{"title":"倍增之ST表","cover":"https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/posts_cover/04.jpg","path":"2021/10/07/倍增之ST表/"},{"title":"快速排序","cover":"https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/posts_cover/0.jpg","path":"2021/07/16/快速排序/"},{"title":"浅谈KMP","cover":"https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/posts_cover/03.jpg","path":"2022/10/04/浅谈KMP/"},{"title":"完全の背包","cover":"https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/posts_cover/02.jpg","path":"2021/10/03/完全の背包/"},{"title":"单调队列优化DP","cover":"https://gitsr.cn/Feng_Nian/Pictures/raw/commit/97e8ac62290b9929f4826c4fd366b68acb7b7c77/posts_cover/05.jpg","path":"2023/02/03/单调队列优化DP/"},{"title":"回文串查找——manacher","cover":"https://gitsr.cn/Feng_Nian/Pictures/raw/commit/97e8ac62290b9929f4826c4fd366b68acb7b7c77/posts_cover/06.jpg","path":"2023/02/14/回文串查找——manacher/"}]`)
+  const posts = JSON.parse(`[{"title":"01の背包问题","path":"2021/10/02/01の背包问题/"},{"title":"倍增之ST表","cover":"https://s3.bmp.ovh/imgs/2023/02/14/0a8d5574fe5826a9.jpg","path":"2021/10/07/倍增之ST表/"},{"title":"快速排序","cover":"https://s3.bmp.ovh/imgs/2023/02/14/23ba057090fe1415.jpg","path":"2021/07/16/快速排序/"},{"title":"浅谈KMP","cover":"https://s3.bmp.ovh/imgs/2023/02/14/6326f846cc2bb1bf.jpg","path":"2022/10/04/浅谈KMP/"},{"title":"完全の背包","cover":"https://s3.bmp.ovh/imgs/2023/02/14/30815e67077d6be5.jpg","path":"2021/10/03/完全の背包/"},{"title":"单调队列优化DP","cover":"https://s3.bmp.ovh/imgs/2023/02/14/38db80cd6d8fa5e8.jpg","path":"2023/02/03/单调队列优化DP/"},{"title":"回文串查找——manacher","cover":"https://s3.bmp.ovh/imgs/2023/02/14/6675727a2c3145f2.jpg","path":"2023/02/14/回文串查找——manacher/"}]`)
   ipt.addEventListener('keyup', e => {
     if (e.key === 'Enter') {
       handleSearch()
@@ -344,7 +344,7 @@
       </p>
       <p class="main-left--subtitle">
         <span>上线时间：</span>
-        <span>15天</span>
+        <span>24天</span>
       </p>
       <p class="main-left--subtitle">
         <span>当前版本：</span>
@@ -398,7 +398,7 @@ pre:active {
           
           <p class="article-info--date">日期：2023-02-14 11:42:00</p>
         </div>
-        <img src="https://gitsr.cn/Feng_Nian/Pictures/raw/commit/97e8ac62290b9929f4826c4fd366b68acb7b7c77/posts_cover/06.jpg" alt="" class="article-cover">
+        <img src="https://s3.bmp.ovh/imgs/2023/02/14/6675727a2c3145f2.jpg" alt="" class="article-cover">
       </div>
     </div>
     <article class="article-content">
@@ -569,11 +569,11 @@ i 为起始和结尾的最长回文串的长度，然后 <span class="math inlin
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可以看到我在跑完马拉车之后又进行了两个处理，接下来引入一个新的概念：饱和字符串</p>
-<p><img src="https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/manacher_01.png"></p>
+<p><img src="https://s3.bmp.ovh/imgs/2023/02/24/f7aaa8c56cd9bce4.png"></p>
 <p>如图，对于当前的 i ，红框中的 <code>aaa</code>
 是回文串但是却并未匹配完全，黄框中的 <code>aaaaa</code>
 饱和字符串（即不能继续扩展）。在 manacher 中计算的其实都是以 i
-为开头和结尾的饱和字符串长度。 <img src="https://gitsr.cn/Feng_Nian/Pictures/raw/branch/main/manacher_02.png"></p>
+为开头和结尾的饱和字符串长度。 <img src="https://s3.bmp.ovh/imgs/2023/02/24/68df1f5011172d2b.png"></p>
 <p>如图，i 和 i + 2 指向的都是 <span class="math inline">\(\#\)</span>（图中未画出）,以 i
 结尾子最长回文串长度应该是 4 ，但是由于马拉车的对称性质，所以只匹配了
 <code>aaa</code> 但如果让 <span class="math inline">\(l[i] = max(l[i],
