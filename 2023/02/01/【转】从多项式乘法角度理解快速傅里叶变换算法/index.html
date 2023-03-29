@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>凤年の小窝——【转】从多项式乘法角度理解快速傅里叶变换算法 | (*^▽^*)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/css/public.css" />
+    <link rel="stylesheet" href="/css/layout.css" />
+    <link rel="stylesheet" href="/css/iconfont.css" />
+    <link rel="stylesheet" href="/css/APlayer.min.css" />
+    <link rel="stylesheet" href="/css/katex.min.css" />
+    <script src="/js/APlayer.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.pjax.min.js"></script>
+    <script src="/js/katex.min.js"></script>
+    <script src="/js/contrib/auto-render.min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>
+    document.title = `凤年の小窝——【转】从多项式乘法角度理解快速傅里叶变换算法`
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div>
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"01の背包问题","path":"2021/10/02/01の背包问题/"},{"title":"倍增之ST表","cover":"https://s3.bmp.ovh/imgs/2023/02/14/0a8d5574fe5826a9.jpg","path":"2021/10/07/倍增之ST表/"},{"title":"快速排序","cover":"https://s3.bmp.ovh/imgs/2023/02/14/23ba057090fe1415.jpg","path":"2021/07/16/快速排序/"},{"title":"浅谈KMP","cover":"https://s3.bmp.ovh/imgs/2023/02/14/6326f846cc2bb1bf.jpg","path":"2022/10/04/浅谈KMP/"},{"title":"完全の背包","cover":"https://s3.bmp.ovh/imgs/2023/02/14/30815e67077d6be5.jpg","path":"2021/10/03/完全の背包/"},{"title":"单调队列优化DP","cover":"https://s3.bmp.ovh/imgs/2023/02/14/38db80cd6d8fa5e8.jpg","path":"2023/02/03/单调队列优化DP/"},{"title":"回文串查找——manacher","cover":"https://s3.bmp.ovh/imgs/2023/02/14/6675727a2c3145f2.jpg","path":"2023/02/14/回文串查找——manacher/"},{"title":"学会了也不能自动AC的AC自动机","cover":"https://s3.bmp.ovh/imgs/2023/02/14/84329245b8a40c23.jpg","path":"2023/02/26/学会了也不能自动AC的AC自动机/"},{"title":"【持续更新】那些犯过的可爱错误","cover":"https://s3.bmp.ovh/imgs/2023/02/14/8fdf2e8166a17031.jpg","path":"2023/02/26/警钟敲烂——那些犯过的可爱错误/"},{"title":"【转】从多项式乘法角度理解快速傅里叶变换算法","cover":"https://s3.bmp.ovh/imgs/2023/02/14/e95def4a60f5cc51.jpg","path":"2023/02/01/【转】从多项式乘法角度理解快速傅里叶变换算法/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script>
+ 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">凤年</p>
+        <div class="main-left--tags">
+          <span class="main-left--tag">蒟蒻</span>
+          <span class="main-left--tag">中二病</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p></p>
+        <p>“不过是些许风霜罢了”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/FengNian000"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>0</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>6</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>4 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>10 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>今天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>57天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v1.0.3</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <style>
+pre::-webkit-scrollbar {
+  width: 5px;
+  height: 10px;
+  background-color:#F5F5F5;
+}
+/*定义滚动条轨道
+内阴影+圆角*/
+pre::-webkit-scrollbar-track {
+  background-color:#F5F5F5;
+}
+/*定义滑块
+内阴影+圆角*/
+pre::-webkit-scrollbar-thumb {
+  background-color: rgb(69, 83, 100);
+}
+
+pre:active {
+  background-color: rgb(81, 95, 116);
+}
+</style>
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">【转】从多项式乘法角度理解快速傅里叶变换算法</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            <a class="tag-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a>
+          </div>
+          
+          <p class="article-info--date">日期：2023-02-01 14:26:04</p>
+        </div>
+        <img src="https://s3.bmp.ovh/imgs/2023/02/14/e95def4a60f5cc51.jpg" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content">
+      <h3><span id="引入问题">引入问题</span></h3>
+<p>现在有多项式<span class="math inline">\(A(x) =
+\sum\limits^{n}_{i=1}a_ix^i, B(x) =
+\sum\limits^{m}_{i=1}b_ix^i.\)</span></p>
+<p>欲求多项式<span class="math inline">\(C(x) = A(x) \cdot
+B(x).\)</span></p>
+<h3><span id="暴力求解">暴力求解</span></h3>
+<p>容易根据乘法分配律得出<span class="math inline">\(C(x) =
+\sum\limits^{n}_{i=0}\sum\limits^{m}_{j=0}a_ib_jx^{i + j}=\sum\limits^{n
++ m}_{k = 0}(\sum\limits^{n}_{i=0}a_ib_{k - i}x^i).\)</span></p>
+<p>使用该式求得各项系数显然是<span class="math inline">\(\Theta(nm)\)</span>的，超过了题目要求的复杂度限制.</p>
+<h3><span id="尝试使用值表示法计算多项式乘法">尝试使用值表示法计算多项式乘法</span></h3>
+<p>考虑使用值表示法表示一个多项式.</p>
+<blockquote>
+<p>定理<span class="math inline">\(1\)</span>：使用<span class="math inline">\((d+1)\)</span>个互不相同的点可以确定唯一一个<span class="math inline">\(d\)</span>项多项式<span class="math inline">\(P(x)\)</span>.</p>
+<p>证明：设我们找到了点集<span class="math inline">\(A = \{(x_0,P(x_0)),
+(x_1, P(x_1)), ...,(x_d, P(x_d))\}\)</span></p>
+<p>且令<span class="math inline">\(P(x) =
+\sum\limits^{d}_{i=0}p_ix^i.\)</span></p>
+<p>那么，可代入每个点，列线性方程组为矩阵-向量如下： <span class="math display">\[
+\begin{bmatrix}
+P(x_0) \\
+P(x_1) \\
+... \\
+P(x_d) \\
+\end{bmatrix} =
+\underbrace{\begin{bmatrix}
+1 &amp; x_0 &amp; x_0^2 &amp; x_0^3 &amp; ... &amp; x_0^d\\
+1 &amp; x_1 &amp; x_1^2 &amp; x_1^3 &amp; ... &amp; x_1^d\\
+... \\
+1 &amp; x_d &amp; x_d^2 &amp; x_d^3 &amp; ... &amp; x_d^d\\
+\end{bmatrix}}_M
+\begin{bmatrix}
+p_0 \\
+p_1 \\
+... \\
+p_d \\
+\end{bmatrix}
+\]</span> 其第<span class="math inline">\(i\)</span>行、第<span class="math inline">\(j\)</span>列可以表示为<span class="math inline">\(α_i^{j-1}\)</span>的矩阵被称为范德蒙矩阵，则矩阵<span class="math inline">\(M\)</span>即为范德蒙矩阵.</p>
+<p>范德蒙矩阵一定可逆（前提：点互不相同），应用克莱姆法则可知上述方程组有唯一解.</p>
+</blockquote>
+<p>我们尝试使用值表示法来表示多项式<span class="math inline">\(A(x),B(x).\)</span></p>
+<p>我们已经知道多项式<span class="math inline">\(C(x)\)</span>有<span class="math inline">\(n+m\)</span>项，那么就需要<span class="math inline">\(n + m + 1\)</span>个点来唯一确定多项式<span class="math inline">\(C(x).\)</span></p>
+<p><strong>（求值）</strong> 对于多项式<span class="math inline">\(A(x),B(x)\)</span>，我们找<span class="math inline">\(n + m + 1\)</span>个点，记作： <span class="math display">\[
+P_A=\{(x_0,A(x_0)),(x_1,A(x_1)),...,(x_{n+m},A(x_{n+m}))\}, \\
+P_B=\{(x_0,B(x_0)),(x_1,B(x_1)),...,(x_{n+m},B(x_{n+m}))\}.
+\]</span> 将每一个点的纵坐标相乘，即可得到<span class="math inline">\(C(x)=A(x)\cdot B(x)\)</span>的值表示. <span class="math display">\[
+P_C=\{(x_0,A(x_0)\cdot B(x_0)),(x_1,A(x_1)\cdot
+B(x_1)),...,(x_{n+m},A(x_{n+m})\cdot B(x_{n+m}))\}.
+\]</span> <strong>（插值）</strong>通过点集<span class="math inline">\(P_C\)</span>，我们使用某种方法还原回系数，即可得到多项式<span class="math inline">\(C(x).\)</span></p>
+<h3><span id="从求值过程引入离散傅里叶变换">从求值过程引入离散傅里叶变换</span></h3>
+<p>我们知道，若函数<span class="math inline">\(f(x)\)</span>为偶函数，则有<span class="math inline">\(f(x)=f(-x)\)</span>，若函数<span class="math inline">\(f(x)\)</span>为奇函数，则有<span class="math inline">\(f(x)=-f(-x).\)</span></p>
+<p>我们设要求值的多项式为<span class="math inline">\(P(x)=\sum\limits^n_{i=0}a_ix^i\)</span>，我们尝试根据奇偶性将其分为两个多项式：
+<span class="math display">\[
+P_e(x)=a_0+a_2x+a_4x^2+...+a_nx^{n/2} \\
+P_o(x)=a_1+a_3x+a_4x^2+...+a_{n-1}x^{n/2-1} \\
+P(x)=\sum\limits^n_{i=0}a_ix^i=P_e(x^2)+xP_o(x^2).
+\]</span> 易知多项式<span class="math inline">\(P_e(x^2),P_o(x^2)\)</span>都是偶函数.
+则我们只需要循环<span class="math inline">\(n /
+2\)</span>次，迭代求值<span class="math inline">\(P_e(x^2),P_o(x^2)\)</span>即可.</p>
+<p>求值结束之后，我们应当得到一系列<span class="math inline">\(P_e(x),P_o(x)\)</span>的值，根据下列表达式合并：
+<span class="math display">\[
+P(x)=P_e(x^2)+xP_o(x^2) \\
+P(-x)=P_e(x^2)-xP_o(x^2)
+\]</span> 但是想要完善这个过程，需要一点细节.</p>
+<h3><span id="离散傅里叶变换中初始点的研究">离散傅里叶变换中初始点的研究</span></h3>
+<p>上述过程有一定缺陷.</p>
+<p>如果把各数限制在<span class="math inline">\(\mathbb{R}\)</span>内，则<span class="math inline">\(\nexists x \in
+\mathbb{R}:x^2=-(-x)^2\)</span>.</p>
+<p>也就是说，我们无法在实数域内完成上述迭代，因为我们假定可以找到一对<span class="math inline">\((x^2,-x^2)\)</span>，但不存在<span class="math inline">\(x\in\mathbb{R}\)</span>的平方与其相反数的平方不相等.</p>
+<p>所以我们在复数域内选取初始点.</p>
+<p>将<span class="math inline">\(x^n=1\)</span>的<span class="math inline">\(n\)</span>个根记作<span class="math inline">\(\omega^1_n,
+\omega^2_n,...,\omega^n_n\)</span>，我们将论证<strong>使用<span class="math inline">\(1\)</span>的<span class="math inline">\(n\)</span>次方根（即<span class="math inline">\(n\)</span>次单位根）作为初始点最优.</strong></p>
+<p><strong><span class="math inline">\(n\)</span>次单位根平分复数域上的单位圆</strong>，即由欧拉公式可得，<span class="math inline">\(\omega_n^k=cos(\frac{2k\pi}{n}) +
+isin(\frac{2k\pi}{n}).\)</span></p>
+<blockquote>
+<p>定理<span class="math inline">\(2\)</span>：<span class="math inline">\(\omega^i_n = -\omega^{i+n/2}_{n}(n/2 \in N^*, i
+\in [0, n/2))\)</span>.</p>
+</blockquote>
+<blockquote>
+<p>定理<span class="math inline">\(3\)</span>：<span class="math inline">\((\omega^{i}_n)^2=\omega^{i}_{n/2}=\omega^{2i}_{n}(n/2
+\in N^*, i \in [0, n/2))\)</span></p>
+</blockquote>
+<p>根据定理<span class="math inline">\(2\)</span>和定理<span class="math inline">\(3\)</span>可知，<span class="math inline">\(n\)</span>次单位根的相反数仍是一个<span class="math inline">\(n\)</span>次单位根，且<span class="math inline">\(n\)</span>次单位根的平方为一个<span class="math inline">\(n/2\)</span>次单位根.</p>
+<p>这两条性质非常适合迭代，这就是我们选取<span class="math inline">\(n\)</span>次单位根作为初始点的理由.</p>
+<h3><span id="使用快速傅里叶变换解决多项式求值问题">使用快速傅里叶变换解决多项式求值问题</span></h3>
+<blockquote>
+<p>注意：为了读者理解，我们将重复一些之前已经叙述的内容.</p>
+</blockquote>
+<p>对于给定的多项式<span class="math inline">\(P(x)=\sum\limits^n_{i=0}a_ix^i\)</span>，求一个长度为<span class="math inline">\(m+1\)</span><span class="math inline">\((m&gt;n)\)</span>的，形如<span class="math inline">\(\{(\omega_m^0, P(\omega_m^0)), (\omega_m^1,
+P(\omega_m^1)), ... , (\omega^m_m,P(\omega^m_m))\}\)</span>的点集.</p>
+<p>同上，计算： <span class="math display">\[
+P_e(x)=a_0+a_2x+a_4x^2+...+a_nx^{n/2} \\
+P_o(x)=a_1+a_3x+a_4x^2+...+a_{n-1}x^{n/2-1} \\
+P(x)=\sum\limits^n_{i=0}\omega^i_nx^i=P_e(x^2)+xP_o(x^2).
+\]</span> 得到<span class="math inline">\(P_e(x^2),P_o(x^2)\)</span>后，我们循环<span class="math inline">\(n / 2\)</span>次，通过迭代<span class="math inline">\(P_e(x^2), P_o(x^2)\)</span>求值.</p>
+<p>最后通过下列表达式获取点集另一半的值： <span class="math display">\[
+P(\omega_n^j) = P_e(\omega_n^{2j}) + \omega^j_nP_o(\omega^{2j}_n) \\
+P(\omega_n^{j + n / 2}) = P_e(\omega_n^{2j}) -
+\omega^j_nP_o(\omega^{2j}_n)
+\]</span> 这样我们就得到了整个点集，问题得到解决.</p>
+<h3><span id="从求值问题到插值问题">从求值问题到插值问题</span></h3>
+<p>插值问题，即给出形如长度为<span class="math inline">\(n+1,
+\{(\omega_n^0, P(\omega_n^0)), (\omega_n^1, P(\omega_n^1)), ... ,
+(\omega^n_n,P(\omega^n_n))\}\)</span>的点集，求<span class="math inline">\(n\)</span>项式<span class="math inline">\(P(x)\)</span>.</p>
+<p>要解决这样的问题，首先我们要回想求解多项式求值问题的快速傅里叶变换算法的矩阵意义.</p>
+<blockquote>
+<p><strong>求解多项式求值问题的快速傅里叶变换算法的矩阵意义</strong></p>
+<p>如定理<span class="math inline">\(1\)</span>证明，列线性方程组为矩阵-向量如下：
+<span class="math display">\[
+\begin{bmatrix}
+P(\omega^0_n) \\
+P(\omega^1_n) \\
+... \\
+P(\omega^d_n) \\
+\end{bmatrix} =
+\underbrace{\begin{bmatrix}
+1 &amp; 1 &amp; 1 &amp; 1 &amp; ... &amp; 1\\
+1 &amp; \omega^1_n &amp; \omega^2_n &amp; \omega^3_n &amp; ... &amp;
+\omega^d_n\\
+... \\
+1 &amp; \omega^d_n &amp; \omega^{2d}_n &amp; \omega^{3d}_n &amp; ...
+&amp; \omega^{d^2}_n\\
+\end{bmatrix}}_M
+\begin{bmatrix}
+p_0 \\
+p_1 \\
+... \\
+p_d \\
+\end{bmatrix}
+\]</span> 则对于这个矩阵-向量，该算法相当于快速求出了其乘积.</p>
+</blockquote>
+<p>我们对上式中<span class="math inline">\(M\)</span>矩阵求逆<span class="math inline">\(^{[1]}\)</span>，得到下式： <span class="math display">\[
+\begin{bmatrix}
+p_0 \\
+p_1 \\
+... \\
+p_{n-1} \\
+\end{bmatrix} =
+\begin{bmatrix}
+P(\omega^0_n) \\
+P(\omega^1_n) \\
+... \\
+P(\omega^{n-1}_n) \\
+\end{bmatrix}
+{\begin{bmatrix}
+1 &amp; 1 &amp; 1 &amp; 1 &amp; ... &amp; 1\\
+1 &amp; \omega^1_n &amp; \omega^2_n &amp; \omega^3_n &amp; ... &amp;
+\omega^{n-1}_n\\
+... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... \\
+1 &amp; \omega^n_n &amp; \omega^{2n}_n &amp; \omega^{3n}_n &amp; ...
+&amp; \omega^{(n-1)^2}_n\\
+\end{bmatrix}}^{-1}
+\]</span></p>
+<p><span class="math display">\[
+\begin{bmatrix}
+p_0 \\
+p_1 \\
+... \\
+p_{n-1} \\
+\end{bmatrix} =
+\frac1n
+\begin{bmatrix}
+P(\omega^0_n) \\
+P(\omega^1_n) \\
+... \\
+P(\omega^{n-1}_n) \\
+\end{bmatrix}
+\begin{bmatrix}
+1 &amp; 1 &amp; 1 &amp; 1 &amp; ... &amp; 1\\
+1 &amp; \omega^{-1}_n &amp; \omega^{-2}_n &amp; \omega^{-3}_n &amp; ...
+&amp; \omega^{-(n-1)}_n\\
+... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... \\
+1 &amp; \omega^{-n}_n &amp; \omega^{-2n}_n &amp; \omega^{-n}_n &amp; ...
+&amp; \omega^{-(n-1)^2}_n\\
+\end{bmatrix}
+\]</span></p>
+<p>注意到插值的矩阵-向量几乎与求值的矩阵-向量一样，那么可以继续套用快速傅里叶变换算法求解.</p>
+<p>计算： <span class="math display">\[
+P_e(x)=a_0+a_2\omega^1_n+a_4\omega^2_n+...+a_n\omega^{n/2}_n \\
+P_o(x)=a_1+a_3\omega^1_n+a_4\omega^2_n+...+a_{n-1}\omega^{n/2-1}_n \\
+p_x=P_e(x^2)+xP_o(x^2).
+\]</span> 得到<span class="math inline">\(P_e(x^2),P_o(x^2)\)</span>后，我们循环<span class="math inline">\(n / 2\)</span>次，通过迭代<span class="math inline">\(P_e(x^2), P_o(x^2)\)</span>求值.</p>
+<p>最后通过下列表达式获取系数集另一半的值： <span class="math display">\[
+p_j = P_e(\overline{\omega_n^{2j}}) -
+\overline{\omega^{j}_n}P_o(\overline{\omega_n^{2j}}) \\
+p_{j + n / 2} = P_e(\overline{\omega_n^{2j}}) +
+\overline{\omega^{j}_n}P_o(\overline{\omega_n^{2j}})
+\]</span> 这样我们就得到了整个系数集，将，问题得到解决.</p>
+<h3><span id="时间复杂度分析">时间复杂度分析</span></h3>
+<p>假定<span class="math inline">\(n\)</span>为<span class="math inline">\(2\)</span>的次幂，下文将不严格地叙述快速傅里叶变换的时间复杂度为<span class="math inline">\(\mathcal{O}(n\log n).\)</span></p>
+<p>以求解多项式求值问题为例，在每次迭代中，<span class="math inline">\(n\)</span>项式<span class="math inline">\(P(x)\)</span>被分解为两个<span class="math inline">\(n / 2\)</span>项式，对于要求的<span class="math inline">\(n\)</span>个值也被减少为<span class="math inline">\(n/2\)</span>个.</p>
+<p>快速傅里叶变换算法需要求解两个子问题，正是被分解成的两个<span class="math inline">\(n/2\)</span>次多项式.</p>
+<p>故<span class="math inline">\(T(n) =
+2T(\frac{n}2)+\Theta(n).\)</span></p>
+<p>根据主定理<span class="math inline">\(^{[2]}\)</span>求解，<span class="math inline">\(T(n)=\Theta(n\log n).\)</span></p>
+<h3><span id="代码实现">代码实现</span></h3>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;bits/stdc++.h></span></span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> std<span class="token punctuation">;</span>
+<span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token comment">/*省略快读*/</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">const</span> <span class="token keyword">bool</span> DFT <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token keyword">int</span> IDFT <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token keyword">double</span> PI <span class="token operator">=</span> <span class="token function">acos</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">void</span> <span class="token function">FFT</span><span class="token punctuation">(</span>vector<span class="token operator">&lt;</span>complex<span class="token operator">&lt;</span><span class="token keyword">double</span><span class="token operator">></span> <span class="token operator">></span><span class="token operator">&amp;</span> ratios<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">int</span> len<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">int</span> mode<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>len <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">int</span> mid <span class="token operator">=</span> len <span class="token operator">>></span> <span class="token number">1</span><span class="token punctuation">;</span>
+    vector<span class="token operator">&lt;</span>complex<span class="token operator">&lt;</span><span class="token keyword">double</span><span class="token operator">></span> <span class="token operator">></span> even<span class="token punctuation">,</span> odd<span class="token punctuation">;</span>
+    even<span class="token punctuation">.</span><span class="token function">resize</span><span class="token punctuation">(</span>mid<span class="token punctuation">)</span><span class="token punctuation">,</span> odd<span class="token punctuation">.</span><span class="token function">resize</span><span class="token punctuation">(</span>mid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> p1 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> p2 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> len<span class="token punctuation">;</span> i <span class="token operator">+=</span> <span class="token number">2</span><span class="token punctuation">)</span>
+        even<span class="token punctuation">[</span>p1<span class="token operator">++</span><span class="token punctuation">]</span> <span class="token operator">=</span> ratios<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> odd<span class="token punctuation">[</span>p2<span class="token operator">++</span><span class="token punctuation">]</span> <span class="token operator">=</span> ratios<span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">FFT</span><span class="token punctuation">(</span>even<span class="token punctuation">,</span> mid<span class="token punctuation">,</span> mode<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">FFT</span><span class="token punctuation">(</span>odd<span class="token punctuation">,</span> mid<span class="token punctuation">,</span> mode<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> complex<span class="token operator">&lt;</span><span class="token keyword">double</span><span class="token operator">></span> omega <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token function">cos</span><span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">*</span> PI <span class="token operator">/</span> len<span class="token punctuation">)</span><span class="token punctuation">,</span> mode <span class="token operator">*</span> <span class="token function">sin</span><span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">*</span> PI <span class="token operator">/</span> len<span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    complex<span class="token operator">&lt;</span><span class="token keyword">double</span><span class="token operator">></span> w <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> mid<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">,</span> w <span class="token operator">=</span> w <span class="token operator">*</span> omega<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        ratios<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> even<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">+</span> w <span class="token operator">*</span> odd<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        ratios<span class="token punctuation">[</span>i <span class="token operator">+</span> mid<span class="token punctuation">]</span> <span class="token operator">=</span> even<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">-</span> w <span class="token operator">*</span> odd<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+vector<span class="token operator">&lt;</span>complex<span class="token operator">&lt;</span><span class="token keyword">double</span><span class="token operator">></span> <span class="token operator">></span> A<span class="token punctuation">,</span> B<span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> n <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> m <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> len <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token function">ceil</span><span class="token punctuation">(</span><span class="token function">log2</span><span class="token punctuation">(</span>n <span class="token operator">+</span> m <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    A<span class="token punctuation">.</span><span class="token function">resize</span><span class="token punctuation">(</span>len<span class="token punctuation">)</span><span class="token punctuation">,</span> B<span class="token punctuation">.</span><span class="token function">resize</span><span class="token punctuation">(</span>len<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> A<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> m<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> B<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    <span class="token function">FFT</span><span class="token punctuation">(</span>A<span class="token punctuation">,</span> len<span class="token punctuation">,</span> DFT<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">FFT</span><span class="token punctuation">(</span>B<span class="token punctuation">,</span> len<span class="token punctuation">,</span> DFT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> len<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> A<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">*=</span> B<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">FFT</span><span class="token punctuation">(</span>A<span class="token punctuation">,</span> len<span class="token punctuation">,</span> IDFT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> n <span class="token operator">+</span> m<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d "</span><span class="token punctuation">,</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token function">real</span><span class="token punctuation">(</span>A<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token punctuation">(</span><span class="token keyword">double</span><span class="token punctuation">)</span>len <span class="token operator">+</span> <span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">putchar</span><span class="token punctuation">(</span><span class="token char">'\n'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在C++使用快速傅里叶变换求解多项式乘法问题<span class="math inline">\(^{[3]}\)</span>需要做出一些改变.</p>
+<p>首先我们定义复数类，其有两个成员（实部与复部）.</p>
+<p>其次我们将数组的长度定义为定义<span class="math inline">\(len=2^{\lceil\log_2(n + m +
+1)\rceil}\)</span>（我们采用左闭右开的写法），输入两个多项式的系数.</p>
+<p>接下来我们定义快速傅里叶变换（FFT）函数.
+为了减小常数，我们不返回另一个数组，而是直接对原系数数组进行变换.</p>
+<p>递归过程中由于系数数组大小与求点多少一致（均为<span class="math inline">\(len\)</span>），可以减少大量判断.</p>
+<p>函数中我们定义<span class="math inline">\(\omega^1_n=\cos(\frac{2\pi}{n}) +
+sin(\frac{2\pi}{n})i\)</span>，然后对其求幂，不需要也不能在主函数预处理.</p>
+<p>另外注意，这种写法的浮点数类型不应为<code>long double</code>，否则会导致时间爆炸.</p>
+<p>具体卡常方法我会在讲课时说.</p>
+<h3><span id="扩展快速傅里叶变换求解高精度乘法">扩展：快速傅里叶变换求解高精度乘法</span></h3>
+<p>我们可以把任意实数拆分为<span class="math inline">\(k\)</span>的次幂的和（<span class="math inline">\(k\)</span>进制拆分）</p>
+<p>以十进制数字<span class="math inline">\(A,B\)</span>为例： <span class="math display">\[
+A=\overline{a_1a_2...a_n}=\sum\limits_{i=0}^{n-1}10^i\times a_{n-i}\\
+B=\overline{b_1b_2...b_n}=\sum\limits_{i=0}^{n-1}10^i\times b_{n-i}
+\]</span> 令<span class="math inline">\(k=10\)</span>，容易得到两个多项式： <span class="math display">\[
+A(k)=\sum\limits_{i=0}^{n-1}k^i\times a_{n-i}\\
+B(k)=\sum\limits_{i=0}^{n-1}k^i\times b_{n-i}
+\]</span> 对这两个多项式做多项式乘法，对于每一项做进位处理即可得到<span class="math inline">\(C=A\times B.\)</span></p>
+<p>进而扩展我们可以使用快速傅里叶变换实现<span class="math inline">\(k\)</span>进制高精度乘法.</p>
+<p>时间复杂度：<span class="math inline">\(\Theta(\log_2
+(\log_kn))\)</span>.</p>
+<hr>
+<p><span class="math inline">\(^{[1]}\)</span><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/309243881">范德蒙矩阵的逆矩阵怎么计算?
+- 知乎 (zhihu.com)</a></p>
+<p><span class="math inline">\(^{[2]}\)</span><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/100531135">主定理 Master Theorem -
+知乎 (zhihu.com)</a></p>
+<p><span class="math inline">\(^{[3]}\)</span> <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P3803">P3803
+【模板】多项式乘法（FFT） - 洛谷 | 计算机科学教育新生态
+(luogu.com.cn)</a></p>
+<hr>
+<p>原文作者：L1uT1any0u</p>
+<p>原文链接：<a target="_blank" rel="noopener" href="https://liutianyou.site/2023/02/01/%E4%BB%8E%E5%A4%9A%E9%A1%B9%E5%BC%8F%E4%B9%98%E6%B3%95%E8%A7%92%E5%BA%A6%E7%90%86%E8%A7%A3%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2%E7%AE%97%E6%B3%95/">Link</a>
+(该博客已停止维护)</p>
+<script>renderMathInElement(document.body);</script>
+
+    </article>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">引入问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">暴力求解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">尝试使用值表示法计算多项式乘法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">从求值过程引入离散傅里叶变换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">离散傅里叶变换中初始点的研究</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">6.</span> <span class="toc-text">使用快速傅里叶变换解决多项式求值问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">7.</span> <span class="toc-text">从求值问题到插值问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">8.</span> <span class="toc-text">时间复杂度分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">9.</span> <span class="toc-text">代码实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">10.</span> <span class="toc-text">扩展：快速傅里叶变换求解高精度乘法</span></a></li></ol>
+      </div>
+      
+        <div class="catelogue catelogue-2">
+          
+            <p>
+              <span>上一篇：</span>
+              <a href="/2023/02/03/单调队列优化DP/">单调队列优化DP</a>
+            </p>
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/2022/10/04/浅谈KMP/">浅谈KMP</a>
+            </p>
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script src="/js/prism.js"></script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(a.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script>
+ 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="main-right--content">
+      希望来到这里的各位能每天开心，OI夺金!(没开评论区，有问题或意见可以私信洛谷) 
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+      <p>Theme：<a target="_blank" rel="noopener" href="https://github.com/Aizener/hexo-theme-cola">Cola.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index"></a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const commentDom = document.querySelector('.turn-comment')
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"灯火不完美","artist":"smile·轩","url":"http://music.163.com/song/media/outer/url?id=1313474211.mp3","cover":"http://p2.music.126.net/LgYk0Dr3QLAnTa2N-_YRxg==/109951163574393883.jpg?param=130y130"},{"name":"雨 因你而下，与你而止","artist":"Seto","url":"http://music.163.com/song/media/outer/url?id=1377807992.mp3","cover":"http://p1.music.126.net/HWWDEP0eU8_cFsx5qKGZzA==/109951164212297851.jpg?param=130y130"},{"name":"月色与雪色之间，你是第三种绝色","artist":"http://music.163.com/song/media/outer/url?id=535612106.mp3","url":"http://p1.music.126.net/xYzP49uwP-JFR9U2JpdVQw==/109951163322250690.jpg?param=130y130","cover":"/"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  })
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+
+  <script>
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const checkAndSetArticlePageLayout = () => {
+      if (/^\/\d{4}\/\d{2}\/\d{2}\/.*/.test(location.pathname)) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll()
+        }, 500)
+      }, 500)
+    }
+    
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {fragment:'#main-container', timeout:8000})
+
+    $(document).on('pjax:start', function() {
+      // $('.main-container').hide()
+    })
+    $(document).on('pjax:complete', function() {
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      checkAndSetArticlePageLayout()
+      // $('.main-container').fadeIn()
+    })
+  </script>
+</body>
+</html>

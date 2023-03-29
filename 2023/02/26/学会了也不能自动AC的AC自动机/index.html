@@ -201,7 +201,7 @@
   const ipt = document.querySelector('#search-input')
   const btn = document.querySelector('#search-btn')
   const layer = document.querySelector('#search-layer')
-  const posts = JSON.parse(`[{"title":"01の背包问题","path":"2021/10/02/01の背包问题/"},{"title":"倍增之ST表","cover":"https://s3.bmp.ovh/imgs/2023/02/14/0a8d5574fe5826a9.jpg","path":"2021/10/07/倍增之ST表/"},{"title":"快速排序","cover":"https://s3.bmp.ovh/imgs/2023/02/14/23ba057090fe1415.jpg","path":"2021/07/16/快速排序/"},{"title":"浅谈KMP","cover":"https://s3.bmp.ovh/imgs/2023/02/14/6326f846cc2bb1bf.jpg","path":"2022/10/04/浅谈KMP/"},{"title":"完全の背包","cover":"https://s3.bmp.ovh/imgs/2023/02/14/30815e67077d6be5.jpg","path":"2021/10/03/完全の背包/"},{"title":"单调队列优化DP","cover":"https://s3.bmp.ovh/imgs/2023/02/14/38db80cd6d8fa5e8.jpg","path":"2023/02/03/单调队列优化DP/"},{"title":"回文串查找——manacher","cover":"https://s3.bmp.ovh/imgs/2023/02/14/6675727a2c3145f2.jpg","path":"2023/02/14/回文串查找——manacher/"},{"title":"学会了也不能自动AC的AC自动机","cover":"https://s3.bmp.ovh/imgs/2023/02/14/84329245b8a40c23.jpg","path":"2023/02/26/学会了也不能自动AC的AC自动机/"},{"title":"【持续更新】那些犯过的可爱错误","cover":"https://s3.bmp.ovh/imgs/2023/02/14/8fdf2e8166a17031.jpg","path":"2023/02/26/警钟敲烂——那些犯过的可爱错误/"}]`)
+  const posts = JSON.parse(`[{"title":"01の背包问题","path":"2021/10/02/01の背包问题/"},{"title":"倍增之ST表","cover":"https://s3.bmp.ovh/imgs/2023/02/14/0a8d5574fe5826a9.jpg","path":"2021/10/07/倍增之ST表/"},{"title":"快速排序","cover":"https://s3.bmp.ovh/imgs/2023/02/14/23ba057090fe1415.jpg","path":"2021/07/16/快速排序/"},{"title":"浅谈KMP","cover":"https://s3.bmp.ovh/imgs/2023/02/14/6326f846cc2bb1bf.jpg","path":"2022/10/04/浅谈KMP/"},{"title":"完全の背包","cover":"https://s3.bmp.ovh/imgs/2023/02/14/30815e67077d6be5.jpg","path":"2021/10/03/完全の背包/"},{"title":"单调队列优化DP","cover":"https://s3.bmp.ovh/imgs/2023/02/14/38db80cd6d8fa5e8.jpg","path":"2023/02/03/单调队列优化DP/"},{"title":"回文串查找——manacher","cover":"https://s3.bmp.ovh/imgs/2023/02/14/6675727a2c3145f2.jpg","path":"2023/02/14/回文串查找——manacher/"},{"title":"学会了也不能自动AC的AC自动机","cover":"https://s3.bmp.ovh/imgs/2023/02/14/84329245b8a40c23.jpg","path":"2023/02/26/学会了也不能自动AC的AC自动机/"},{"title":"【持续更新】那些犯过的可爱错误","cover":"https://s3.bmp.ovh/imgs/2023/02/14/8fdf2e8166a17031.jpg","path":"2023/02/26/警钟敲烂——那些犯过的可爱错误/"},{"title":"【转】从多项式乘法角度理解快速傅里叶变换算法","cover":"https://s3.bmp.ovh/imgs/2023/02/14/e95def4a60f5cc51.jpg","path":"2023/02/01/【转】从多项式乘法角度理解快速傅里叶变换算法/"}]`)
   ipt.addEventListener('keyup', e => {
     if (e.key === 'Enter') {
       handleSearch()
@@ -256,8 +256,8 @@
   
     <div>
       <div class="main-left--motto">
+        <p></p>
         <p>“不过是些许风霜罢了”</p>
-        <p>“一个普通的高中生”</p>
       </div>
       <div class="main-left--github">
         <span class="line"></span>
@@ -273,7 +273,7 @@
         </a>
         <a href="/tags">
           <div>
-            <span>5</span>
+            <span>6</span>
             <span>标签</span>
           </div>
         </a>
@@ -336,7 +336,7 @@
       </h5>
       <p class="main-left--subtitle">
         <span>文章数目：</span>
-        <span>9 篇</span>
+        <span>10 篇</span>
       </p>
       <p class="main-left--subtitle">
         <span>最近动态：</span>
@@ -344,11 +344,11 @@
       </p>
       <p class="main-left--subtitle">
         <span>上线时间：</span>
-        <span>31天</span>
+        <span>57天</span>
       </p>
       <p class="main-left--subtitle">
         <span>当前版本：</span>
-        <span>v1.0.0</span>
+        <span>v1.0.3</span>
       </p>
     </div>
   </div>
@@ -456,8 +456,9 @@ S: he
 <p>为什么说 <span class="math inline">\(AC = trie + KMP\)</span>
 不太准确呢，trie 部分几乎是一样的，重点在于 KMP 部分，我们来对比一下
 AC自动机 的fail和 KMP 的 nex：</p>
-<p>共同：都是在匹配失败时用来跳转的指针
-不同：nex要求最长公共前缀，fail需要求（当前节点所代表的串）的后缀与（其他节点所代表的串）的前缀的最长，因为
+<p>共同：都是在匹配失败时用来跳转的指针</p>
+<p>不同：nex 要求最长公共前缀，fail
+需要求（当前节点所代表的串）的后缀与（其他节点所代表的串）的前缀的最长，因为
 AC 需要对多个模式串进行匹配，fail
 可能从一个模式串指向另一个模式串，两者的前缀不同。正因此，AC自动机
 在文本串上逐位匹配时，同一位字母可能对应多个模式串。</p>
@@ -465,14 +466,16 @@ AC 需要对多个模式串进行匹配，fail
 <p>参考 KMP 的 nex 构造思路。 利用之前已经求出的 fail 推导当前节点的
 fail 指针。具体使用 BFS 进行层次遍历，设当前节点为 u， 它的父节点为
 fa，它们之间连了一条字符 c 的边，且因为是层次遍历，比 u
-深度小的节点肯定都已经求过 fail，对于 fail[fa]，有两种情况： 1. 节点
-fail[fa] 通过字符 c 连向 w，此时直接令 <span class="math inline">\(fail[u] = trie[fail[fa]][c]\)</span>
+深度小的节点肯定都已经求过 fail，对于 fail[fa]，有两种情况：</p>
+<ol type="1">
+<li>节点 fail[fa] 通过字符 c 连向 w，此时直接令 <span class="math inline">\(fail[u] = trie[fail[fa]][c]\)</span>
 即可，即相当于在 fa 和fail[fa]后面添加了 c 就构成了节点 u 和节点
-fail[u],参考图：</p>
+fail[u],参考图：</li>
+</ol>
 <p><img src="https://s3.bmp.ovh/imgs/2023/02/24/61ccf7aba059cbd6.png"></p>
 <ol start="2" type="1">
 <li>节点 fail[fa] 下面并没有字符 c，那就往上找
-fail[fail[fa]],重复上述操作直到 fail 指向根节点，此时就只能让 <span class="math inline">\(fail[u] = root\)</span>
+fail[fail[fa]],重复上述操作直到 fail 指向根节点，此时就只能让 <span class="math inline">\(fail[u] = root​\)</span>
 <strong>但是本文章没有考虑这种情况而是利用空节点进行跳转</strong>，具体内容一会再说。</li>
 </ol>
 <p>上述操作即为 fail 指针的建立。</p>
@@ -481,9 +484,9 @@ fail[fail[fa]],重复上述操作直到 fail 指向根节点，此时就只能�
 <p>第一层肯定是指向根节点，不解释</p>
 <p><img src="https://s3.bmp.ovh/imgs/2023/02/24/e6957a41842132c6.png"></p>
 <p>3 的父节点 2 的 fail 并没有一个字符 c
-后继，继续往上倒腾，到了根节点，直接令 <span class="math inline">\(fail[3] = 1\)</span> 即连到根节点。 5 的父节点 2
-的 fail 恰好有一个字符 i 的后继，令 <span class="math inline">\(fail[5]
-= trie[fail[2]][i - &#39;a&#39;]​\)</span> 即连到 7。</p>
+后继，继续往上倒腾，到了根节点，直接令 <span class="math inline">\(fail[3] = 1\)</span> 即连到根节点。</p>
+<p>5 的父节点 2 的 fail 恰好有一个字符 i 的后继，令 <span class="math inline">\(fail[5] = trie[fail[2]][i - &#39;a&#39;]​\)</span>
+即连到 7。</p>
 <p>接下来的连接同上，最终会长成这个样：</p>
 <p><img src="https://s3.bmp.ovh/imgs/2023/02/24/c29da99a540755cc.png"></p>
 <p>Code： <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token function">getFail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -702,7 +705,7 @@ string s<span class="token punctuation">[</span>SIZE<span class="token punctuati
         p <span class="token operator">=</span> trie<span class="token punctuation">[</span>p<span class="token punctuation">]</span><span class="token punctuation">[</span>num<span class="token punctuation">]</span><span class="token punctuation">;</span>
     <span class="token punctuation">&#125;</span>
     <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>flag<span class="token punctuation">[</span>p<span class="token punctuation">]</span><span class="token punctuation">)</span> flag<span class="token punctuation">[</span>p<span class="token punctuation">]</span> <span class="token operator">=</span> id<span class="token punctuation">;</span> <span class="token comment">// 记录p点是某个单词的结尾</span>
-    mp<span class="token punctuation">[</span>id<span class="token punctuation">]</span> <span class="token operator">=</span> flag<span class="token punctuation">[</span>p<span class="token punctuation">]</span><span class="token punctuation">;</span>          <span class="token comment">// 第id和单词的结尾编号是p,相当于单词去重，如果 falg[p] 为真说明与之前的串重复</span>
+    mp<span class="token punctuation">[</span>id<span class="token punctuation">]</span> <span class="token operator">=</span> flag<span class="token punctuation">[</span>p<span class="token punctuation">]</span><span class="token punctuation">;</span>          <span class="token comment">// 第id个单词的结尾编号是p,相当于单词去重，如果 falg[p] 为真说明与之前的串重复</span>
 <span class="token punctuation">&#125;</span>
 <span class="token keyword">inline</span> <span class="token keyword">void</span> <span class="token function">getFail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     queue<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">></span> q<span class="token punctuation">;</span>
@@ -746,7 +749,7 @@ string s<span class="token punctuation">[</span>SIZE<span class="token punctuati
 
         <span class="token keyword">int</span> to <span class="token operator">=</span> fail<span class="token punctuation">[</span>now<span class="token punctuation">]</span><span class="token punctuation">;</span>
         <span class="token operator">--</span>in<span class="token punctuation">[</span>to<span class="token punctuation">]</span><span class="token punctuation">;</span>
-        ans<span class="token punctuation">[</span>to<span class="token punctuation">]</span> <span class="token operator">+=</span> ans<span class="token punctuation">[</span>now<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// 从底层往上加</span>
+        ans<span class="token punctuation">[</span>to<span class="token punctuation">]</span> <span class="token operator">+=</span> ans<span class="token punctuation">[</span>now<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// 顺着fail边从底层往上加</span>
         <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>in<span class="token punctuation">[</span>to<span class="token punctuation">]</span><span class="token punctuation">)</span> q<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>to<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span>
@@ -825,7 +828,7 @@ string s<span class="token punctuation">[</span>SIZE<span class="token punctuati
       <i class="iconfont icon-gonggao"></i>
     </div>
     <div class="main-right--content">
-      希望来到这里的各位能每天开心，OI夺金!(现在在学校，没钱开评论区，有问题或意见可以私信洛谷) 
+      希望来到这里的各位能每天开心，OI夺金!(没开评论区，有问题或意见可以私信洛谷) 
     </div>
   </div>
 
@@ -844,7 +847,7 @@ string s<span class="token punctuation">[</span>SIZE<span class="token punctuati
       <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
       <p>Theme：<a target="_blank" rel="noopener" href="https://github.com/Aizener/hexo-theme-cola">Cola.</a></p>
     </div>
-    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index">衡二223现xxxxxxxxxx号(</a> </p>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index"></a> </p>
   </div>
 </div>
 
